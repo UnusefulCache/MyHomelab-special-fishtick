@@ -1,3 +1,4 @@
 secret.txt
 *.pass
 secret/
+secrets.h
