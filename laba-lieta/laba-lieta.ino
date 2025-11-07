@@ -58,8 +58,11 @@ const char** iface = new const char*[ServerStatCount];
 float* rx = new float[ServerStatCount];
 float* tx = new float[ServerStatCount];
 const char** timestamp = new const char*[ServerStatCount];
-
-
+bool* IsDataReady = new bool[ServerStatCount];
+bool* LockedByReading = new bool[ServerStatCount];
+bool* HasBeenDisaplyedOnScreen = new bool[ServerStatCount];
+float TempRx = 0.0;
+float TempTx = 0.0;
 
 /* ---------------- SETUP ---------------- */
 void setup() {
@@ -166,11 +169,11 @@ void loop() {
 
   disk_used[serverIndex-1] = doc["disk_home_used_percent"] | 0;
   disk_free[serverIndex-1] = doc["disk_home_free"] | "?";
-
+  Serial.print(serverIndex-1);
   disk_dev[serverIndex-1] = doc["disk_device"] | "?";
   rKBs[serverIndex-1] = doc["rKBs"] | 0.0;
   wkBs[serverIndex-1] = doc["wkBs"] | 0.0;
-
+  IsDataReady[serverIndex-1] = 1;
   if (doc.containsKey("net")) {
     JsonArray netArr = doc["net"].as<JsonArray>();
     for (JsonObject net : netArr) {
@@ -194,16 +197,14 @@ void loop() {
 
 void DisplayStatsOnScreen(int DisplayingServerIndex){
   Serial.println(DisplayingServerIndex);
-  for(int i=0; i<1024; i++){
-  Serial.printf("Memory used: %.0f bytes\n", memory_used[DisplayingServerIndex-1]);
-  Serial.printf("Memory free: %.0f bytes\n", memory_free[DisplayingServerIndex-1]);
-  Serial.printf("Disk /home used: %d%% free: %s\n", disk_used[DisplayingServerIndex-1], disk_free[DisplayingServerIndex-1]);
-  Serial.printf("Disk I/O (%s): rKBs=%.2f wkBs=%.2f\n", disk_dev[DisplayingServerIndex-1], rKBs[DisplayingServerIndex-1], wkBs[DisplayingServerIndex-1]);
-  Serial.printf("Net %s: RX=%.2f kB/s, TX=%.2f kB/s\n", iface[DisplayingServerIndex-1], rx[DisplayingServerIndex-1], tx[DisplayingServerIndex-1]);
+  //Serial.printf("Memory used: %.0f bytes\n", memory_used[3-1]);
+  //Serial.printf("Memory free: %.0f bytes\n", memory_free[3-1]);
+  //Serial.printf("Disk /home used: %d%% free: %s\n", disk_used[3-1], disk_free[3-1]);
+  //Serial.printf("Disk I/O (%s): rKBs=%.2f wkBs=%.2f\n", disk_dev[3-1], rKBs[3-1], wkBs[3-1]);
+  Serial.printf("Net %s: RX=%.2f kB/s, TX=%.2f kB/s\n", iface[3-1], rx[3-1], tx[3-1]);
     //Serial.print(DataBuffer[ServerStatIndex-1][i]);
     //Serial.print(DataBuffer[ServerStatIndex-2][i]);
     vTaskDelay(100);
-  }
 }
 void UpdateScreenCode( void *pvParameters){
   u8g2.clearBuffer();// Clear display buffer
@@ -254,7 +255,7 @@ void UpdateScreenCode( void *pvParameters){
     if(ScreenMode == 1){ // Show detailed clock
 
     }
-    if(ScreenMode > 2){
+    if(ScreenMode > 1){
         DisplayStatsOnScreen(ScreenMode);
     }
     vTaskDelay(100);

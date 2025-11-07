@@ -2,3 +2,4 @@ secret.txt
 *.pass
 secret/
 secrets.h
+laba-lieta/secrets.h
