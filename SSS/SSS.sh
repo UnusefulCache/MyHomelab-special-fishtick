@@ -87,8 +87,8 @@ while true; do
 
   json="{${cpu_json}, ${net_json}, ${mem_json}, ${disk_json}, ${disk_io_json}, \"timestamp\": \"${timestamp}\"}"
 
-  printf "3|%s" "$json" | nc "$ESP32_IP" "$ESP32_PORT"
-  #printf "5|%s\n" "$json"
+ # printf "3|%s" "$json" | nc "$ESP32_IP" "$ESP32_PORT"
+  printf "5|%s\n" "$json"
 
   sleep 1
 done
